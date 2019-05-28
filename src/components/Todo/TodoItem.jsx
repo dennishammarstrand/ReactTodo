@@ -39,16 +39,13 @@ function TodoItem(props) {
           />
         </div>
       </div>
-      <form
-        onDoubleClick={() => setDisabled(!disabled)}
-        onBlur={onBlur}
-        onSubmit={onSubmit}
-      >
+      <form onDoubleClick={() => setDisabled(!disabled)} onSubmit={onSubmit}>
         <input
           className={`${props.todo.completed && "line"}`}
           type="text"
           defaultValue={props.todo.text}
           disabled={disabled}
+          onBlur={onBlur}
         />
       </form>
       <i className="fas fa-times" onClick={() => props.remove(props.todo.id)} />

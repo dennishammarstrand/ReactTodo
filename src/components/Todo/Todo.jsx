@@ -1,4 +1,4 @@
-import React, { useReducer } from "react";
+import React, { useReducer, useEffect } from "react";
 import TodoInput from "./TodoInput";
 import TodoItem from "./TodoItem";
 import TodoAction from "./TodoAction";
@@ -83,6 +83,10 @@ function Todo() {
       ? []
       : JSON.parse(localStorage.getItem("todos"))
   );
+
+  useEffect(() => {
+    window.location.hash = "#/All";
+  }, []);
 
   const addTodo = text => {
     dispatchAction({
