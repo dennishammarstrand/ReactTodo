@@ -2,11 +2,11 @@ import React, { useState } from "react";
 
 function TodoItem(props) {
   const [disabled, setDisabled] = useState(true);
-  const [text, setText] = useState("");
 
   const onBlur = e => {
     e.preventDefault();
-    if (text !== "" && props.todo.text !== "") {
+    const text = e.target.value;
+    if (text !== "") {
       setDisabled(!disabled);
       props.todo.text = text;
       props.updateTodo(props.todo);
@@ -17,7 +17,8 @@ function TodoItem(props) {
 
   const onSubmit = e => {
     e.preventDefault();
-    if (text !== "" && props.todo.text !== "") {
+    const text = e.target.firstChild.value;
+    if (text !== "") {
       setDisabled(!disabled);
       props.todo.text = text;
       props.updateTodo(props.todo);
@@ -48,7 +49,6 @@ function TodoItem(props) {
           type="text"
           defaultValue={props.todo.text}
           disabled={disabled}
-          onChange={e => setText(e.target.value)}
         />
       </form>
       <i className="fas fa-times" onClick={() => props.remove(props.todo.id)} />
