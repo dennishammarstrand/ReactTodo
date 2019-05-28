@@ -11,6 +11,15 @@ function App() {
         {/* <Nav /> */}
       </header>
       <Todo />
+      <footer>
+        <p>Double-click to edit a todo</p>
+        <p>
+          Created by Dennis Hammarstrand{" "}
+          <a href="https://github.com/dennishammarstrand">
+            <i className="fab fa-github" />
+          </a>
+        </p>
+      </footer>
     </>
   );
 }

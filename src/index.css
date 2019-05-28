@@ -174,3 +174,13 @@ input:disabled {
 .fade {
   opacity: 0.3;
 }
+
+/*############Footer#############*/
+
+footer {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  margin-top: 3em;
+  font-size: x-small;
+}
