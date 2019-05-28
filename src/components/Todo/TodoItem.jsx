@@ -7,24 +7,24 @@ function TodoItem(props) {
     e.preventDefault();
     const text = e.target.value;
     if (text !== "") {
-      setDisabled(!disabled);
       props.todo.text = text;
       props.updateTodo(props.todo);
     } else {
       props.remove(props.todo.id);
     }
+    setDisabled(true);
   };
 
   const onSubmit = e => {
     e.preventDefault();
     const text = e.target.firstChild.value;
     if (text !== "") {
-      setDisabled(!disabled);
       props.todo.text = text;
       props.updateTodo(props.todo);
     } else {
       props.remove(props.todo.id);
     }
+    setDisabled(true);
   };
 
   return (
@@ -43,9 +43,12 @@ function TodoItem(props) {
         <input
           className={`${props.todo.completed && "line"}`}
           type="text"
-          defaultValue={props.todo.text}
+          value={props.todo.text}
           disabled={disabled}
           onBlur={onBlur}
+          onChange={e =>
+            props.updateTodo({ ...props.todo, text: e.target.value })
+          }
         />
       </form>
       <i className="fas fa-times" onClick={() => props.remove(props.todo.id)} />

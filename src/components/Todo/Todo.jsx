@@ -85,7 +85,9 @@ function Todo() {
   );
 
   useEffect(() => {
-    window.location.hash = "#/All";
+    if (window.location.hash === "") {
+      window.location.hash = "#/All";
+    }
   }, []);
 
   const addTodo = text => {
