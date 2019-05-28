@@ -184,3 +184,12 @@ footer {
   margin-top: 3em;
   font-size: x-small;
 }
+
+footer p {
+  opacity: 0.5;
+}
+
+footer i:hover {
+  color: purple;
+  opacity: 1;
+}
