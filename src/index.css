@@ -144,7 +144,7 @@ input:disabled {
   padding: 10px;
 }
 
-.filters a {
+.filter {
   text-decoration: none;
   color: black;
   padding: 0 0.5em;
@@ -152,9 +152,8 @@ input:disabled {
   border-radius: 5px;
 }
 
-.filters a:focus {
+.filters a:hover {
   border: 1px solid rgb(219, 182, 219);
-  border-radius: 5px;
 }
 
 .clear button {
@@ -163,6 +162,10 @@ input:disabled {
 
 .clear button:hover {
   text-decoration: underline;
+}
+
+.active {
+  border: 1px solid rgb(219, 182, 219);
 }
 
 .display-none {

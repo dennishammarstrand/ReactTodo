@@ -1,4 +1,4 @@
-import React, { useState, useReducer } from "react";
+import React, { useReducer } from "react";
 import TodoInput from "./TodoInput";
 import TodoItem from "./TodoItem";
 import TodoAction from "./TodoAction";
@@ -16,57 +16,111 @@ const filterReducer = (state, action) => {
   }
 };
 
-function Todo() {
-  const [todo, setTodo] = useState([]);
-  const [filter, dispatchFilter] = useReducer(filterReducer, "ALL");
+const saveToLocalStorage = state => {
+  localStorage.clear();
+  localStorage.setItem("todos", JSON.stringify(state));
+};
 
-  const addTodo = text => {
-    setTodo(todos => [
-      ...todos,
-      { text: text, completed: false, id: todo.length }
-    ]);
-  };
-
-  const remove = todoId => {
-    setTodo(todo.filter(to => to.id !== todoId));
-  };
-
-  const markComplete = todoId => {
-    setTodo(
-      todo.map(todo => {
-        if (todo.id === todoId) {
+const actionReducer = (state, action) => {
+  switch (action.type) {
+    case "ADD_TODO":
+      if (!state) {
+        return [action.payload];
+      }
+      const add = [...state, action.payload];
+      saveToLocalStorage(add);
+      return add;
+    case "REMOVE_TODO":
+      const remove = state.filter(todo => todo.id !== action.payload);
+      saveToLocalStorage(remove);
+      return remove;
+    case "MARK_TODO":
+      const mark = state.map(todo => {
+        if (todo.id === action.payload) {
           todo.completed = !todo.completed;
         }
         return todo;
-      })
-    );
+      });
+      saveToLocalStorage(mark);
+      return mark;
+    case "MARK_ALL":
+      const markAll = state.map(todo => {
+        todo.completed = true;
+        return todo;
+      });
+      saveToLocalStorage(markAll);
+      return markAll;
+    case "UNMARK_ALL":
+      const unmarkAll = state.map(todo => {
+        todo.completed = !todo.completed;
+        return todo;
+      });
+      saveToLocalStorage(unmarkAll);
+      return unmarkAll;
+    case "CLEAR":
+      const clear = state.filter(todo => todo.completed !== true);
+      saveToLocalStorage(clear);
+      return clear;
+    case "UPDATE_TODO":
+      const update = state.map(todo => {
+        if (todo.id === action.payload.id) {
+          todo.text = action.payload.text;
+        }
+        return todo;
+      });
+      saveToLocalStorage(update);
+      return update;
+    default:
+      break;
+  }
+};
+
+function Todo() {
+  const [filter, dispatchFilter] = useReducer(filterReducer, "ALL");
+  const [state, dispatchAction] = useReducer(
+    actionReducer,
+    localStorage.getItem("todos") === null
+      ? []
+      : JSON.parse(localStorage.getItem("todos"))
+  );
+
+  const addTodo = text => {
+    dispatchAction({
+      type: "ADD_TODO",
+      payload: { text: text, completed: false, id: Math.random(0, 2000) }
+    });
+  };
+
+  const updateTodo = todo => {
+    dispatchAction({
+      type: "UPDATE_TODO",
+      payload: todo
+    });
+  };
+
+  const remove = todoId => {
+    dispatchAction({ type: "REMOVE_TODO", payload: todoId });
+  };
+
+  const markComplete = todoId => {
+    dispatchAction({ type: "MARK_TODO", payload: todoId });
   };
 
   const markAll = () => {
-    if (CompletedTodos() < todo.length) {
-      setTodo(
-        todo.map(t => {
-          t.completed = true;
-          return t;
-        })
-      );
+    if (CompletedTodos() < state.length) {
+      dispatchAction({ type: "MARK_ALL" });
     } else {
-      setTodo(
-        todo.map(t => {
-          t.completed = !t.completed;
-          return t;
-        })
-      );
+      dispatchAction({ type: "UNMARK_ALL" });
     }
   };
 
   const clear = () => {
-    setTodo(todo.filter(to => to.completed !== true));
+    dispatchAction({ type: "CLEAR" });
   };
 
   function CompletedTodos() {
     let count = 0;
-    todo.forEach(t => {
+    state.forEach(t => {
       if (t.completed === true) {
         count++;
       }
@@ -75,7 +129,7 @@ function Todo() {
   }
 
   function Hide() {
-    if (todo.length < 1) {
+    if (state.length < 1) {
       return true;
     }
     return false;
@@ -83,13 +137,25 @@ function Todo() {
 
   function TodoCount() {
     let count = 0;
-    todo.forEach(t => {
+    state.forEach(t => {
       if (t.completed === false) {
         count++;
       }
     });
     return count;
   }
+
+  window.addEventListener("load", () => {
+    dispatchFilter({
+      type: "SHOW_" + window.location.hash.substring(2).toUpperCase()
+    });
+  });
+
+  window.addEventListener("hashchange", () => {
+    dispatchFilter({
+      type: "SHOW_" + window.location.hash.substring(2).toUpperCase()
+    });
+  });
 
   const showAll = () => {
     dispatchFilter({ type: "SHOW_ALL" });
@@ -103,7 +169,7 @@ function Todo() {
     dispatchFilter({ type: "SHOW_COMPLETED" });
   };
 
-  const filteredTodos = todo.filter(todo => {
+  const filteredTodos = state.filter(todo => {
     if (filter === "ALL") {
       return true;
     }
@@ -123,7 +189,7 @@ function Todo() {
         addTodo={addTodo}
         markAll={markAll}
         todoCount={TodoCount()}
-        length={todo.length}
+        length={state.length}
       />
       {filteredTodos.map((t, i) => (
         <TodoItem
@@ -131,6 +197,7 @@ function Todo() {
           todo={t}
           remove={remove}
           markComplete={markComplete}
+          updateTodo={updateTodo}
         />
       ))}
       <TodoAction
@@ -140,7 +207,7 @@ function Todo() {
         showAll={showAll}
         showActive={showActive}
         showCompleted={showCompleted}
-        length={todo.length}
+        length={state.length}
       />
     </div>
   );
